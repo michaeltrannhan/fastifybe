@@ -2,9 +2,6 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
   <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
     <p align="center">
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
@@ -29,8 +26,33 @@
 ## Installation
 
 ```bash
-$ npm install
+npm install
 ```
+
+Because my pc has many issues with port 9200, so I use the cloud as the alternative, and it does not correlate to any issues with the code.
+Also, we have to configure the env to run properly, the sample env is below:
+
+```env
+PORT = 3000
+ELASTICSEARCH_NODE=http://localhost:9200
+ELASTICSEARCH_USERNAME=elastic
+ELASTICSEARCH_PASSWORD=ykbFCUMR615SFOpXVOb72kaq
+
+ELASTICSEARCH_CLOUD_ID=Fcorp_evaluation_test:YXNpYS1zb3V0aGVhc3QxLmdjcC5lbGFzdGljLWNsb3VkLmNvbTo0NDMkYjIwYzcxMDk4MDI1NDc0MGIyNzgzODJkZjIyOTg4MWIkMzNjYjBmOGQzODU4NDUyOTg1ZDJkZGZlN2IxMWM5ZDE=
+
+```
+
+## OpenAPI Documentation
+
+The documentation is available at <http://localhost:3000/v1/api>
+
+## Postman testing
+
+I also create the workspace for testing the APIs on Postman, the link is below:
+
+[Postman](https://app.getpostman.com/join-team?invite_code=86d48dca98c1890d2134492f987f5dd7&target_code=5e6589816cd74c7cf9c9dd5bf9b2d80a)
+
+```bash
 
 ## Running the app
 
