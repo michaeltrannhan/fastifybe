@@ -12,6 +12,8 @@ import {
   Req,
   Res,
   Version,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
@@ -19,23 +21,36 @@ import { UpdateBookDto } from './dto/update-book.dto';
 
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { UpdateAllBookFieldsDto } from './dto/update-all-book-fields.dto';
+import { ApiResponse } from '@nestjs/swagger';
 @Controller('books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
   @Post()
   @Version('1')
-  // create(@Body() createBookDto: CreateBookDto) {
-  //   return this.booksService.create(createBookDto);
-  // }
-  async createBook(@Body() newBook: CreateBookDto, @Res() res: FastifyReply) {
+  @ApiResponse({
+    status: 201,
+    description: 'The record has been successfully created.',
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Book already exists',
+  })
+  async createBook(
+    @Body() newBook: CreateBookDto,
+    @Res({ passthrough: true })
+    res: FastifyReply,
+  ) {
     const book = this.booksService.createBook(newBook);
     return book;
   }
 
   @Post('bulk')
   @Version('1')
-  async bulkInsert(@Body() books: CreateBookDto[], @Res() res: FastifyReply) {
+  async bulkInsert(
+    @Body() books: CreateBookDto[],
+    @Res({ passthrough: true }) res: FastifyReply,
+  ) {
     const book = await this.booksService.bulkInsert(books);
     return book;
   }

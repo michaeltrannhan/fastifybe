@@ -4,5 +4,5 @@ import { Book } from './books/entities/book.entity';
 
 @Injectable()
 export class AppService {
-  constructor() { }
+  constructor() {}
 }

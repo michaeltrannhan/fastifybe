@@ -2,21 +2,23 @@ import {
   BulkRequest,
   BulkResponse,
   GetResponse,
+  IndexResponse,
   UpdateResponse,
 } from '@elastic/elasticsearch/lib/api/types';
 import {
   BadRequestException,
   HttpException,
   HttpStatus,
+  HttpCode,
   Injectable,
 } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
+import { create } from 'domain';
 import { CreateBookDto } from 'src/books/dto/create-book.dto';
 import { UpdateAllBookFieldsDto } from 'src/books/dto/update-all-book-fields.dto';
 import { UpdateBookDto } from 'src/books/dto/update-book.dto';
 import { Book } from 'src/books/entities/book.entity';
 import { BookSearchBody } from 'src/books/types/BookSearchBody.interface';
-import { BookSearchResponse } from 'src/books/types/BookSearchResponse.interface';
 
 @Injectable()
 export class SearchService {
@@ -24,14 +26,13 @@ export class SearchService {
   constructor(private readonly elasticsearchService: ElasticsearchService) {}
 
   async insertBook(book: CreateBookDto) {
-    console.log('inserting books');
-    let res;
+    let res: IndexResponse;
     try {
       res = await this.elasticsearchService.index<BookSearchBody>({
         index: this.index,
         id: book.id.toString(),
         op_type: 'create',
-        body: book,
+        document: book,
       });
     } catch (err) {
       throw new BadRequestException({
@@ -45,24 +46,32 @@ export class SearchService {
   async bulkInsert(books: Book[]) {
     let res: BulkResponse;
     try {
-      const bulk = [];
-      books.forEach((book) => {
-        bulk.push({
+      const bulk: BulkRequest<Book, any> = { operations: [] };
+      bulk.operations = books.map((book) => {
+        return {
           index: {
-            _id: book.id,
+            _id: book.id.toString(),
             _index: 'books',
           },
-        });
-        bulk.push(book);
+          _source: book,
+        };
       });
-      res = await this.elasticsearchService.bulk({
-        index: this.index,
-        body: bulk,
-      });
+      res = await this.elasticsearchService.bulk(bulk);
     } catch (err) {
       console.log(err);
       throw new BadRequestException(err);
     }
+    return res;
+  }
+
+  async searchAllBooks() {
+    return await this.elasticsearchService
+      .search<Book[]>({
+        index: this.index,
+        sort: 'id:asc',
+        size: 100,
+      })
+      .then((res) => res.hits.hits.map((book) => book._source));
   }
 
   async searchIndex(q: string) {
@@ -82,7 +91,7 @@ export class SearchService {
   }
 
   async updateBook(id: string, partialUpdate: UpdateBookDto) {
-    let res: UpdateResponse;
+    let res: UpdateResponse<Book>;
     try {
       res = await this.elasticsearchService.update({
         index: this.index,
@@ -98,7 +107,7 @@ export class SearchService {
   }
 
   async updateAllFields(id: string, book: UpdateAllBookFieldsDto) {
-    let res: UpdateResponse;
+    let res: UpdateResponse<Book>;
     try {
       res = await this.elasticsearchService.update({
         index: this.index,
@@ -109,14 +118,6 @@ export class SearchService {
       throw new BadRequestException(err);
     }
     return res;
-  }
-
-  async searchAllBooks() {
-    return await this.elasticsearchService
-      .search({
-        index: this.index,
-      })
-      .then((res) => res.hits.hits.map((book) => book._source));
   }
 
   async deleteBook(id: string) {

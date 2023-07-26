@@ -6,8 +6,8 @@ import { BooksModule } from './books/books.module';
 import { SearchModule } from './search/search.module';
 
 @Module({
-  imports: [ ConfigModule.forRoot(), BooksModule, SearchModule ],
-  controllers: [ AppController ],
-  providers: [ AppService ],
+  imports: [ConfigModule.forRoot(), BooksModule, SearchModule],
+  controllers: [AppController],
+  providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

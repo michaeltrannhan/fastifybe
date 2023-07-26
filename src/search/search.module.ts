@@ -5,23 +5,23 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { env } from 'process';
 
 @Module({
-    imports: [
-        ConfigModule,
-        ElasticsearchModule.registerAsync({
-            imports: [ ConfigModule ],
-            useFactory: async (configService: ConfigService) => ({
-                // node: process.env.ELASTICSEARCH_NODE,
-                auth: {
-                    username: process.env.ELASTICSEARCH_USERNAME,
-                    password: process.env.ELASTICSEARCH_PASSWORD,
-                },
-                cloud: {
-                    id: process.env.ELASTICSEARCH_CLOUD_ID,
-                }
-            }),
-            inject: [ ConfigService ],
-        }),
-    ],
-    exports: [ ElasticsearchModule ]
+  imports: [
+    ConfigModule,
+    ElasticsearchModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        // node: process.env.ELASTICSEARCH_NODE,
+        auth: {
+          username: process.env.ELASTICSEARCH_USERNAME,
+          password: process.env.ELASTICSEARCH_PASSWORD,
+        },
+        cloud: {
+          id: process.env.ELASTICSEARCH_CLOUD_ID,
+        },
+      }),
+      inject: [ConfigService],
+    }),
+  ],
+  exports: [ElasticsearchModule],
 })
-export class SearchModule { }
+export class SearchModule {}

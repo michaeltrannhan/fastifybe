@@ -16,22 +16,21 @@ async function bootstrap() {
       // logger: [ 'error', 'warn' ],
       bufferLogs: true,
     },
-
   );
+  app.enableCors();
   app.enableVersioning({
     type: VersioningType.URI,
     prefix: 'v',
-  })
+  });
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
-    .setTitle('Booke apis')
+    .setTitle('Books apis')
     .setDescription('The books API description')
     .setVersion('1.0')
     .addTag('books')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-
 
   await app.listen(process.env.PORT || 3001);
 }
